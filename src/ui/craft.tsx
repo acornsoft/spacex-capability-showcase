@@ -26,22 +26,31 @@ export function SplitText({ text, className, delay = 0, colorClass, inView = fal
 
   return (
     <span className={className}>
-      {Array.from(text).map((char, index) => (
-        <motion.span
-          key={`${char}-${index}`}
-          className={`inline-block will-change-transform ${colorClass ?? ''}`}
-          initial={{ y: '0.7em', opacity: 0, filter: 'blur(10px)' }}
-          animate={inView ? undefined : { y: 0, opacity: 1, filter: 'blur(0px)' }}
-          whileInView={inView ? { y: 0, opacity: 1, filter: 'blur(0px)' } : undefined}
-          viewport={inView ? { once: true, amount: 0.7 } : undefined}
-          transition={{
-            delay: delay + index * 0.032,
-            duration: 0.62,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-        >
-          {char === ' ' ? '\u00A0' : char}
-        </motion.span>
+      {text.split(' ').map((word, wordIndex, words) => (
+        <span key={`${word}-${wordIndex}`} className="inline-block whitespace-nowrap">
+          {Array.from(word).map((char, index) => {
+            const globalIndex =
+              words.slice(0, wordIndex).reduce((sum, item) => sum + item.length + 1, 0) + index
+            return (
+              <motion.span
+                key={`${char}-${globalIndex}`}
+                className={`inline-block will-change-transform ${colorClass ?? ''}`}
+                initial={{ y: '0.7em', opacity: 0, filter: 'blur(10px)' }}
+                animate={inView ? undefined : { y: 0, opacity: 1, filter: 'blur(0px)' }}
+                whileInView={inView ? { y: 0, opacity: 1, filter: 'blur(0px)' } : undefined}
+                viewport={inView ? { once: true, amount: 0.7 } : undefined}
+                transition={{
+                  delay: delay + globalIndex * 0.032,
+                  duration: 0.62,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {char}
+              </motion.span>
+            )
+          })}
+          {wordIndex < words.length - 1 ? '\u00A0' : null}
+        </span>
       ))}
     </span>
   )

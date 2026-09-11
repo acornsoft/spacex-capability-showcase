@@ -121,12 +121,12 @@ body {
   inset: 0;
   background: linear-gradient(
     110deg,
-    transparent 28%,
-    color-mix(in srgb, white 70%, transparent) 48%,
-    transparent 68%
+    transparent 20%,
+    color-mix(in srgb, var(--color-cyan) 55%, white) 48%,
+    transparent 76%
   );
   transform: translateX(-130%);
-  animation: shimmer-sweep 2.4s ease-in-out infinite;
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
 }
 
 .shimmer-btn.is-cyan {
