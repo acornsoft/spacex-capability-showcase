@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion'
 import { CAPABILITIES } from '@/content'
+import { useDirector } from '@/lib/director'
 
 export function Capabilities() {
+  const { setChapterFocus } = useDirector()
+
   return (
     <section id="craft" className="relative px-5 py-28 md:px-10 md:py-36">
-      <div className="pointer-events-none absolute inset-0 bg-void/50" />
+      <div className="pointer-events-none absolute inset-0 bg-void/55" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -30,7 +33,9 @@ export function Capabilities() {
             viewport={{ once: true, amount: 0.35 }}
             transition={{ duration: 0.55, delay: index * 0.05 }}
             whileHover={{ y: -6, scale: 1.01 }}
-            className="glass pointer-events-auto rounded-3xl bg-ink/70 p-6"
+            className="glass pointer-events-auto rounded-3xl bg-ink/75 p-6"
+            onMouseEnter={() => setChapterFocus('hull')}
+            onMouseLeave={() => setChapterFocus(null)}
           >
             <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-cyan">
               {card.index}

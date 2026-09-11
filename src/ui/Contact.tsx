@@ -12,7 +12,7 @@ export function Contact() {
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.4 }}
-        className="glass relative z-10 w-full max-w-2xl rounded-3xl p-7 md:p-10"
+        className="glass pointer-events-auto relative z-10 w-full max-w-2xl rounded-3xl p-7 md:p-10"
       >
         <p className="type-kicker">{CONTACT.kicker}</p>
         <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-frost md:text-5xl">
@@ -37,7 +37,7 @@ export function Contact() {
 
 export function Footer() {
   return (
-    <footer className="relative z-10 flex flex-col gap-2 border-t border-white/8 px-5 py-6 text-steel md:flex-row md:items-center md:justify-between md:px-10">
+    <footer className="pointer-events-auto relative z-10 flex flex-col gap-2 border-t border-white/8 px-5 py-6 text-steel md:flex-row md:items-center md:justify-between md:px-10">
       <p className="font-display text-sm text-mist">Built by {SITE.builder}</p>
       <a href={SITE.mailto} className="font-mono text-xs text-cyan">
         {SITE.email}

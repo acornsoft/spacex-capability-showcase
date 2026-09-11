@@ -47,13 +47,14 @@ body {
 }
 
 @utility glass {
-  background: color-mix(in srgb, #0c121a 52%, transparent);
-  backdrop-filter: blur(22px) saturate(1.25);
-  border: 1px solid color-mix(in srgb, white 18%, transparent);
+  background: color-mix(in srgb, #0c121a 46%, transparent);
+  backdrop-filter: blur(24px) saturate(1.35);
+  border: 1px solid color-mix(in srgb, white 20%, transparent);
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 14%, transparent),
-    0 0 0 1px color-mix(in srgb, #3ee0e8 12%, transparent),
-    0 22px 56px color-mix(in srgb, black 48%, transparent);
+    inset 0 1px 0 color-mix(in srgb, white 18%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #3ee0e8 8%, transparent),
+    0 0 0 1px color-mix(in srgb, #3ee0e8 14%, transparent),
+    0 24px 64px color-mix(in srgb, black 52%, transparent);
 }
 
 @utility glass-strong {

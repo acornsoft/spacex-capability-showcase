@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { HERO, SITE } from '@/content'
+import { useDirector } from '@/lib/director'
 import { MetricChips } from '@/ui/MetricChips'
 
 type HeroProps = {
@@ -7,10 +8,12 @@ type HeroProps = {
 }
 
 export function Hero({ isCoarse }: HeroProps) {
+  const { goTo } = useDirector()
+
   return (
     <section
       id="hero"
-      className="relative flex min-h-[100svh] flex-col justify-end px-5 pb-16 pt-28 md:justify-center md:px-10 md:pb-20 md:pt-24"
+      className="relative flex min-h-[115svh] flex-col justify-end px-5 pb-16 pt-28 md:justify-center md:px-10 md:pb-20 md:pt-24"
     >
       <MetricChips isCoarse={isCoarse} />
 
@@ -49,12 +52,13 @@ export function Hero({ isCoarse }: HeroProps) {
           transition={{ duration: 0.7, delay: 0.7 }}
           className="mt-8 flex flex-wrap items-center gap-3"
         >
-          <a
-            href={HERO.ctaHref}
+          <button
+            type="button"
+            onClick={() => goTo('ascent')}
             className="pointer-events-auto rounded-full bg-frost px-5 py-2.5 font-display text-sm font-semibold text-void transition hover:bg-cyan"
           >
             {HERO.cta}
-          </a>
+          </button>
           <p className="max-w-xs font-mono text-[0.62rem] leading-relaxed tracking-[0.04em] text-steel">
             {SITE.disclaimer}
           </p>

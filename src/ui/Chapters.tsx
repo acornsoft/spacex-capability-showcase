@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion'
 import { CHAPTERS, TELEMETRY, type ChapterId } from '@/content'
-import { assertNever } from '@/lib/scene-pose'
+import { useDirector } from '@/lib/director'
+import { chapterPart, assertNever } from '@/lib/scene-pose'
 
-type ChapterAsideKind = 'telemetry' | 'reuse' | 'none'
+type ChapterAsideKind = 'telemetry' | 'reuse' | 'engines'
 
 type ChapterBlockProps = {
   id: ChapterId
@@ -12,18 +13,26 @@ type ChapterBlockProps = {
   aside?: ChapterAsideKind
 }
 
-function ChapterBlock({ id, index, title, body, aside = 'none' }: ChapterBlockProps) {
+function ChapterBlock({ id, index, title, body, aside = 'engines' }: ChapterBlockProps) {
+  const { setChapterFocus, goTo } = useDirector()
+  const part = chapterPart(id)
+
   return (
     <section
       id={id}
-      className="relative flex min-h-[130svh] items-center px-5 py-24 md:px-10"
+      className="relative flex min-h-[145svh] items-center px-5 py-24 md:px-10"
     >
       <motion.article
         initial={{ opacity: 0, y: 28 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false, amount: 0.45 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="glass max-w-lg rounded-3xl p-6 md:p-8"
+        onMouseEnter={() => setChapterFocus(part)}
+        onMouseLeave={() => setChapterFocus(null)}
+        onFocus={() => setChapterFocus(part)}
+        onBlur={() => setChapterFocus(null)}
+        onClick={() => goTo(id)}
+        className="glass pointer-events-auto max-w-lg cursor-pointer rounded-3xl p-6 md:p-8"
       >
         <p className="type-kicker">{index}  /  Sequence</p>
         <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-frost md:text-4xl">
@@ -54,11 +63,15 @@ function ChapterAside({ kind }: { kind: ChapterAsideKind }) {
     case 'reuse':
       return (
         <p className="mt-6 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-amber">
-          Landing legs deploy  ·  grid fades in  ·  second-flight budget
+          Hover to isolate legs  ·  click to hold this shot
         </p>
       )
-    case 'none':
-      return null
+    case 'engines':
+      return (
+        <p className="mt-6 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-cyan">
+          Hover to isolate the engine bay
+        </p>
+      )
     default:
       return assertNever(kind)
   }
@@ -67,24 +80,77 @@ function ChapterAside({ kind }: { kind: ChapterAsideKind }) {
 export function Chapters() {
   return (
     <>
-      {CHAPTERS.map((chapter) => (
-        <ChapterBlock
-          key={chapter.id}
-          id={chapter.id}
-          index={chapter.index}
-          title={chapter.title}
-          body={chapter.body}
-          aside={asideFor(chapter.id)}
-        />
-      ))}
+      <Interstitial
+        kicker="Gate"
+        title="Energy"
+        line="A hold, then a push. The camera is the flight plan."
+      />
+      <ChapterBlock
+        id="ascent"
+        index="01"
+        title={CHAPTERS[0].title}
+        body={CHAPTERS[0].body}
+        aside={asideFor('ascent')}
+      />
+      <Interstitial
+        kicker="Coast"
+        title="Guidance lock"
+        line="Orbit is a close-up: fins, raceway, the parts that make reuse possible."
+      />
+      <ChapterBlock
+        id="precision"
+        index="02"
+        title={CHAPTERS[1].title}
+        body={CHAPTERS[1].body}
+        aside={asideFor('precision')}
+      />
+      <Interstitial
+        kicker="Return"
+        title="Second flight"
+        line="The vehicle comes back into frame. Legs, grid, horizon."
+      />
+      <ChapterBlock
+        id="reuse"
+        index="03"
+        title={CHAPTERS[2].title}
+        body={CHAPTERS[2].body}
+        aside={asideFor('reuse')}
+      />
     </>
+  )
+}
+
+function Interstitial({
+  kicker,
+  title,
+  line,
+}: {
+  kicker: string
+  title: string
+  line: string
+}) {
+  return (
+    <section className="relative flex min-h-[58svh] items-end px-5 py-16 md:px-10">
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: false, amount: 0.5 }}
+        className="max-w-xl"
+      >
+        <p className="type-kicker">{kicker}</p>
+        <h2 className="mt-3 font-display text-5xl font-semibold tracking-tight text-frost/90 md:text-7xl">
+          {title}
+        </h2>
+        <p className="mt-4 max-w-md text-sm text-steel">{line}</p>
+      </motion.div>
+    </section>
   )
 }
 
 function asideFor(id: ChapterId): ChapterAsideKind {
   switch (id) {
     case 'ascent':
-      return 'none'
+      return 'engines'
     case 'precision':
       return 'telemetry'
     case 'reuse':

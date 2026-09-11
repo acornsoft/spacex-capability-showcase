@@ -1,8 +1,12 @@
+import { PerformanceMonitor } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import type { MotionValue } from 'framer-motion'
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
+import { ACESFilmicToneMapping, SRGBColorSpace } from 'three'
 import { pixelRatioBudget } from '@/lib/runtime'
+import { Horizon } from '@/scene/Atmosphere'
 import { CameraRig } from '@/scene/CameraRig'
+import { PostFX } from '@/scene/PostFX'
 import { Rocket } from '@/scene/Rocket'
 import { Lights, OrbitGuides, Stage } from '@/scene/Stage'
 import { NebulaWash, Starfield } from '@/scene/Starfield'
@@ -20,31 +24,48 @@ export function Experience({
   isCoarse,
   reducedMotion,
 }: ExperienceProps) {
+  const [quality, setQuality] = useState<'high' | 'low'>(isCoarse ? 'low' : 'high')
+  const dpr = quality === 'low' ? ([1, 1.15] as [number, number]) : pixelRatioBudget(isCoarse)
+  const stars = quality === 'low' ? Math.min(starCount, 900) : starCount
+  const postEnabled = quality === 'high' && !reducedMotion && !isCoarse
+
   return (
     <Canvas
       className="h-full w-full"
-      dpr={pixelRatioBudget(isCoarse)}
+      dpr={dpr}
       gl={{
-        antialias: !isCoarse,
-        alpha: true,
+        antialias: !postEnabled && !isCoarse,
+        alpha: false,
         powerPreference: 'high-performance',
         stencil: false,
+        depth: true,
       }}
-      camera={{ position: [4.65, 2.55, 5.35], fov: 36, near: 0.1, far: 160 }}
+      camera={{ position: [5.35, 2.85, 6.15], fov: 28, near: 0.1, far: 180 }}
       onCreated={({ gl }) => {
         gl.setClearColor('#030508', 1)
-        gl.toneMappingExposure = 1.2
+        gl.toneMapping = ACESFilmicToneMapping
+        gl.toneMappingExposure = 1.08
+        gl.outputColorSpace = SRGBColorSpace
       }}
     >
+      <PerformanceMonitor
+        onDecline={() => setQuality('low')}
+        onIncline={() => {
+          if (!isCoarse) setQuality('high')
+        }}
+        flipflops={3}
+      />
       <Suspense fallback={null}>
         <CameraRig progress={progress} reducedMotion={reducedMotion} />
-        <Lights />
-        <Starfield count={starCount} />
+        <Lights isCoarse={isCoarse || quality === 'low'} />
+        <Starfield count={stars} />
         <NebulaWash />
-        <OrbitGuides />
+        <Horizon progress={progress} />
+        <OrbitGuides progress={progress} />
         <Rocket progress={progress} reducedMotion={reducedMotion} />
         <Stage progress={progress} />
-        <fog attach="fog" args={['#030508', 12, 55]} />
+        <fog attach="fog" args={['#030508', 14, 62]} />
+        <PostFX progress={progress} enabled={postEnabled} />
       </Suspense>
     </Canvas>
   )

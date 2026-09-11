@@ -1,118 +1,151 @@
 import { useFrame } from '@react-three/fiber'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import type { MotionValue } from 'framer-motion'
 import {
   AdditiveBlending,
   Color,
+  DynamicDrawUsage,
   Group,
-  MeshStandardMaterial,
+  InstancedMesh,
+  MeshPhysicalMaterial,
+  Object3D,
   PointLight,
+  Vector3,
 } from 'three'
-import { poseAt } from '@/lib/scene-pose'
+import { useDirectorOptional } from '@/lib/director'
+import { PART_LABELS, publishMarks } from '@/lib/marks'
+import { shotAt, type VehiclePart } from '@/lib/scene-pose'
 
 type RocketProps = {
   progress: MotionValue<number>
   reducedMotion: boolean
 }
 
-function useRocketMaterials() {
+function useVehicleMaterials() {
   return useMemo(() => {
-    const hull = new MeshStandardMaterial({
-      color: new Color('#f4f7fb'),
-      metalness: 0.62,
-      roughness: 0.22,
-      envMapIntensity: 1.15,
-    })
-    const tile = new MeshStandardMaterial({
-      color: new Color('#c5ccd4'),
-      metalness: 0.35,
-      roughness: 0.48,
-      envMapIntensity: 0.7,
-    })
-    const soot = new MeshStandardMaterial({
-      color: new Color('#14181e'),
-      metalness: 0.55,
-      roughness: 0.4,
-      envMapIntensity: 0.85,
-    })
-    const carbon = new MeshStandardMaterial({
-      color: new Color('#090c10'),
+    const hull = new MeshPhysicalMaterial({
+      color: new Color('#eef3f8'),
       metalness: 0.88,
       roughness: 0.16,
-      envMapIntensity: 1.25,
+      clearcoat: 0.55,
+      clearcoatRoughness: 0.22,
+      envMapIntensity: 1.35,
     })
-    const mark = new MeshStandardMaterial({
-      color: new Color('#3ee0e8'),
-      emissive: new Color('#3ee0e8'),
-      emissiveIntensity: 0.7,
-      metalness: 0.2,
-      roughness: 0.28,
+    const tile = new MeshPhysicalMaterial({
+      color: new Color('#9aa3ad'),
+      metalness: 0.28,
+      roughness: 0.62,
+      envMapIntensity: 0.55,
     })
-    const copper = new MeshStandardMaterial({
-      color: new Color('#b87333'),
-      metalness: 0.9,
-      roughness: 0.18,
+    const soot = new MeshPhysicalMaterial({
+      color: new Color('#12161c'),
+      metalness: 0.7,
+      roughness: 0.38,
+      envMapIntensity: 0.9,
+    })
+    const carbon = new MeshPhysicalMaterial({
+      color: new Color('#07090c'),
+      metalness: 0.92,
+      roughness: 0.14,
       envMapIntensity: 1.4,
     })
-    const amber = new MeshStandardMaterial({
+    const titanium = new MeshPhysicalMaterial({
+      color: new Color('#8b939c'),
+      metalness: 0.95,
+      roughness: 0.22,
+      envMapIntensity: 1.5,
+    })
+    const copper = new MeshPhysicalMaterial({
+      color: new Color('#c47a3a'),
+      metalness: 1,
+      roughness: 0.2,
+      envMapIntensity: 1.7,
+      emissive: new Color('#3a1404'),
+      emissiveIntensity: 0.15,
+    })
+    const mark = new MeshPhysicalMaterial({
+      color: new Color('#3ee0e8'),
+      emissive: new Color('#3ee0e8'),
+      emissiveIntensity: 0.85,
+      metalness: 0.35,
+      roughness: 0.24,
+      transparent: true,
+      opacity: 0.96,
+    })
+    const amber = new MeshPhysicalMaterial({
       color: new Color('#e8a54b'),
       emissive: new Color('#e8a54b'),
-      emissiveIntensity: 0.45,
-      metalness: 0.35,
+      emissiveIntensity: 0.55,
+      metalness: 0.4,
       roughness: 0.3,
     })
-    return { hull, tile, soot, carbon, mark, copper, amber }
+    const cyan = new Color('#3ee0e8')
+    const black = new Color('#000000')
+    return { hull, tile, soot, carbon, titanium, copper, mark, amber, cyan, black }
   }, [])
 }
 
 function GridFin({
-  hull,
+  titanium,
   carbon,
 }: {
-  hull: MeshStandardMaterial
-  carbon: MeshStandardMaterial
+  titanium: MeshPhysicalMaterial
+  carbon: MeshPhysicalMaterial
 }) {
   return (
     <group>
-      <mesh material={carbon} position={[0, 0, -0.08]}>
-        <boxGeometry args={[0.06, 0.05, 0.16]} />
+      <mesh material={carbon} position={[0, 0, -0.09]}>
+        <boxGeometry args={[0.07, 0.055, 0.2]} />
       </mesh>
-      <mesh material={carbon} position={[0, 0, 0.02]}>
-        <boxGeometry args={[0.36, 0.3, 0.018]} />
+      <mesh material={carbon} position={[0, 0, 0.015]}>
+        <boxGeometry args={[0.4, 0.34, 0.016]} />
       </mesh>
-      {[-0.1, 0, 0.1].map((x) => (
-        <mesh key={`v-${x}`} material={hull} position={[x, 0, 0.03]}>
-          <boxGeometry args={[0.016, 0.26, 0.012]} />
+      {[-0.13, -0.045, 0.045, 0.13].map((x) => (
+        <mesh key={`v-${x}`} material={titanium} position={[x, 0, 0.028]}>
+          <boxGeometry args={[0.014, 0.3, 0.012]} />
         </mesh>
       ))}
-      {[-0.07, 0.07].map((y) => (
-        <mesh key={`h-${y}`} material={hull} position={[0, y, 0.03]}>
-          <boxGeometry args={[0.3, 0.014, 0.01]} />
+      {[-0.1, 0, 0.1].map((y) => (
+        <mesh key={`h-${y}`} material={titanium} position={[0, y, 0.028]}>
+          <boxGeometry args={[0.34, 0.012, 0.01]} />
         </mesh>
       ))}
     </group>
   )
 }
 
-function LandingLeg({
-  carbon,
-  hull,
-}: {
-  carbon: MeshStandardMaterial
-  hull: MeshStandardMaterial
-}) {
+function HeatTiles({ material }: { material: MeshPhysicalMaterial }) {
+  const mesh = useRef<InstancedMesh>(null)
+  const count = 56
+
+  useLayoutEffect(() => {
+    const dummy = new Object3D()
+    if (!mesh.current) return
+    let index = 0
+    for (let ring = 0; ring < 7; ring += 1) {
+      const y = 2.52 + ring * 0.085
+      const radius = 0.25 - ring * 0.026
+      const around = 8
+      for (let step = 0; step < around; step += 1) {
+        if (index >= count) break
+        const theta = (step / around) * Math.PI * 2 + ring * 0.18
+        dummy.position.set(Math.cos(theta) * radius, y, Math.sin(theta) * radius)
+        dummy.lookAt(0, y + 0.55, 0)
+        dummy.scale.set(0.05, 0.01, 0.068)
+        dummy.updateMatrix()
+        mesh.current.setMatrixAt(index, dummy.matrix)
+        index += 1
+      }
+    }
+    mesh.current.instanceMatrix.setUsage(DynamicDrawUsage)
+    mesh.current.instanceMatrix.needsUpdate = true
+  }, [count])
+
   return (
-    <>
-      <mesh material={carbon} position={[0, -0.55, 0]} rotation={[0.08, 0, 0]}>
-        <boxGeometry args={[0.055, 1.15, 0.045]} />
-      </mesh>
-      <mesh material={hull} position={[0, -1.18, 0.12]} rotation={[0.55, 0, 0]}>
-        <boxGeometry args={[0.22, 0.035, 0.32]} />
-      </mesh>
-      <mesh material={carbon} position={[0, 0.02, 0]}>
-        <boxGeometry args={[0.08, 0.1, 0.08]} />
-      </mesh>
-    </>
+    <instancedMesh ref={mesh} args={[undefined, undefined, count]}>
+      <boxGeometry args={[1, 1, 1]} />
+      <primitive object={material} attach="material" />
+    </instancedMesh>
   )
 }
 
@@ -120,87 +153,191 @@ export function Rocket({ progress, reducedMotion }: RocketProps) {
   const root = useRef<Group>(null)
   const plume = useRef<Group>(null)
   const engineLight = useRef<PointLight>(null)
-  const materials = useRocketMaterials()
+  const anchors = useRef<Record<VehiclePart, Group | null>>({
+    hull: null,
+    fins: null,
+    engines: null,
+    legs: null,
+    raceway: null,
+  })
+  const materials = useVehicleMaterials()
+  const director = useDirectorOptional()
+  const projector = useMemo(() => new Vector3(), [])
 
   useEffect(() => {
-    const set = Object.values(materials)
+    const {
+      hull,
+      tile,
+      soot,
+      carbon,
+      titanium,
+      copper,
+      mark,
+      amber,
+    } = materials
+    const set = [hull, tile, soot, carbon, titanium, copper, mark, amber]
     return () => {
       set.forEach((material) => material.dispose())
     }
   }, [materials])
 
   useFrame((state) => {
-    const pose = poseAt(progress.get(), reducedMotion ? 0 : state.clock.elapsedTime)
+    const shot = shotAt(progress.get())
+    const idle = reducedMotion ? 0 : Math.sin(state.clock.elapsedTime * 0.35) * 0.03
     if (root.current) {
-      root.current.position.x = 0.55 + pose.rocketX
-      root.current.position.y = pose.rocketY
-      root.current.rotation.x = pose.rocketTilt
-      root.current.rotation.y = reducedMotion ? 0.55 : pose.rocketYaw
-      root.current.scale.setScalar(pose.rocketScale)
+      root.current.position.x = shot.shiftX
+      root.current.position.y = shot.lift
+      root.current.rotation.x = shot.tilt
+      root.current.rotation.y = shot.yaw + idle
+      root.current.scale.setScalar(shot.scale)
     }
     if (plume.current) {
-      const flicker = reducedMotion ? 1 : 0.8 + Math.sin(state.clock.elapsedTime * 42) * 0.2
-      const scale = Math.max(0.02, pose.engine * flicker)
-      plume.current.scale.set(0.85 + scale * 0.45, scale, 0.85 + scale * 0.45)
-      plume.current.visible = pose.engine > 0.04
+      const flicker = reducedMotion ? 1 : 0.82 + Math.sin(state.clock.elapsedTime * 46) * 0.18
+      const scale = Math.max(0.02, shot.engine * flicker)
+      plume.current.scale.set(0.7 + scale * 0.55, scale, 0.7 + scale * 0.55)
+      plume.current.visible = shot.engine > 0.05
     }
     if (engineLight.current) {
-      engineLight.current.intensity = pose.engine * (reducedMotion ? 8 : 14)
+      engineLight.current.intensity = shot.engine * (reducedMotion ? 7 : 16)
     }
+
+    const focus = director?.effectiveFocus ?? null
+    const pulse = 0.55 + Math.sin(state.clock.elapsedTime * 3.2) * 0.2
+    materials.mark.emissiveIntensity = focus === 'raceway' ? 1.4 * pulse : 0.7
+    materials.copper.emissiveIntensity = focus === 'engines' ? 0.55 + shot.engine : 0.12 + shot.engine * 0.35
+    materials.titanium.emissive.copy(focus === 'fins' ? materials.cyan : materials.black)
+    materials.titanium.emissiveIntensity = focus === 'fins' ? 0.28 : 0
+    materials.hull.roughness = focus === 'hull' ? 0.12 : 0.16
+
+    const camera = state.camera
+    const marks = (Object.entries(anchors.current) as Array<[VehiclePart, Group | null]>).map(
+      ([id, node]) => {
+        if (!node) {
+          return { id, label: PART_LABELS[id], x: 0, y: 0, visible: false }
+        }
+        projector.setFromMatrixPosition(node.matrixWorld)
+        projector.project(camera)
+        const onScreen = projector.z < 1 && Math.abs(projector.x) < 1.15 && Math.abs(projector.y) < 1.15
+        return {
+          id,
+          label: PART_LABELS[id],
+          x: (projector.x * 0.5 + 0.5) * window.innerWidth,
+          y: (-projector.y * 0.5 + 0.5) * window.innerHeight,
+          visible: onScreen && focus === id,
+        }
+      },
+    )
+    publishMarks(marks)
   })
 
-  const { hull, tile, soot, carbon, mark, copper, amber } = materials
+  const { hull, tile, soot, carbon, titanium, copper, mark, amber } = materials
+  const setFocus = director?.setPointerFocus
 
   return (
     <group ref={root}>
-      <mesh material={hull} position={[0, 0.15, 0]} castShadow>
-        <cylinderGeometry args={[0.38, 0.4, 3.35, 32]} />
-      </mesh>
-      <mesh material={soot} position={[0, -1.35, 0]}>
-        <cylinderGeometry args={[0.4, 0.42, 0.62, 32]} />
-      </mesh>
-      <mesh material={carbon} position={[0, 1.78, 0]}>
-        <cylinderGeometry args={[0.34, 0.38, 0.18, 28]} />
-      </mesh>
-      <mesh material={tile} position={[0, 2.28, 0]}>
-        <cylinderGeometry args={[0.26, 0.34, 0.82, 28]} />
-      </mesh>
-      <mesh material={soot} position={[0, 2.86, 0]}>
-        <coneGeometry args={[0.26, 0.48, 28]} />
-      </mesh>
-
-      <mesh material={carbon} position={[0.405, 0.05, 0]}>
-        <boxGeometry args={[0.04, 2.55, 0.1]} />
-      </mesh>
-      <mesh material={mark} position={[0.43, 0.55, 0]}>
-        <boxGeometry args={[0.02, 0.72, 0.055]} />
-      </mesh>
-      <mesh material={mark} position={[0, 1.42, 0.385]}>
-        <boxGeometry args={[0.22, 0.04, 0.02]} />
-      </mesh>
-      <mesh material={amber} position={[0, -0.95, 0.405]}>
-        <boxGeometry args={[0.08, 0.08, 0.02]} />
-      </mesh>
-
-      {[-0.55, 0.55, 1.15].map((y) => (
-        <mesh key={`ring-${y}`} material={carbon} position={[0, y, 0]}>
-          <torusGeometry args={[0.405, 0.012, 8, 40]} />
+      <group
+        ref={(node) => {
+          anchors.current.hull = node
+        }}
+        onPointerOver={(event) => {
+          event.stopPropagation()
+          setFocus?.('hull')
+        }}
+        onPointerOut={() => setFocus?.(null)}
+      >
+        <mesh material={hull} position={[0, 0.15, 0]}>
+          <cylinderGeometry args={[0.38, 0.4, 3.35, 48]} />
         </mesh>
-      ))}
+        {[-1.05, -0.55, -0.05, 0.45, 0.95, 1.35].map((y) => (
+          <mesh key={`panel-${y}`} material={carbon} position={[0, y, 0]}>
+            <torusGeometry args={[0.392, 0.006, 6, 48]} />
+          </mesh>
+        ))}
+        {[-0.22, 0.22].map((z) => (
+          <mesh key={`seam-${z}`} material={carbon} position={[0.02, 0.15, z]}>
+            <boxGeometry args={[0.006, 3.2, 0.006]} />
+          </mesh>
+        ))}
+        <mesh material={soot} position={[0, -1.35, 0]}>
+          <cylinderGeometry args={[0.4, 0.43, 0.64, 48]} />
+        </mesh>
+        <mesh material={carbon} position={[0, 1.78, 0]}>
+          <cylinderGeometry args={[0.335, 0.38, 0.16, 40]} />
+        </mesh>
+        <mesh material={tile} position={[0, 2.26, 0]}>
+          <cylinderGeometry args={[0.255, 0.335, 0.82, 40]} />
+        </mesh>
+        <mesh material={soot} position={[0, 2.84, 0]}>
+          <coneGeometry args={[0.255, 0.46, 40]} />
+        </mesh>
+        <HeatTiles material={tile} />
+      </group>
 
-      {[0, 1, 2, 3].map((index) => (
-        <group key={`fin-${index}`} rotation={[0, (index * Math.PI) / 2, 0]} position={[0, 1.38, 0]}>
-          <group position={[0, 0, 0.48]} rotation={[-0.12, 0, 0]}>
-            <GridFin hull={hull} carbon={carbon} />
+      <group
+        ref={(node) => {
+          anchors.current.raceway = node
+        }}
+        onPointerOver={(event) => {
+          event.stopPropagation()
+          setFocus?.('raceway')
+        }}
+        onPointerOut={() => setFocus?.(null)}
+      >
+        <mesh material={carbon} position={[0.408, 0.05, 0]}>
+          <boxGeometry args={[0.042, 2.55, 0.11]} />
+        </mesh>
+        <mesh material={mark} position={[0.435, 0.55, 0]}>
+          <boxGeometry args={[0.018, 0.78, 0.05]} />
+        </mesh>
+        <mesh material={amber} position={[0, -0.95, 0.41]}>
+          <boxGeometry args={[0.07, 0.07, 0.018]} />
+        </mesh>
+      </group>
+
+      <group
+        ref={(node) => {
+          anchors.current.fins = node
+        }}
+        position={[0, 1.38, 0]}
+        onPointerOver={(event) => {
+          event.stopPropagation()
+          setFocus?.('fins')
+        }}
+        onPointerOut={() => setFocus?.(null)}
+      >
+        {[0, 1, 2, 3].map((index) => (
+          <group key={`fin-${index}`} rotation={[0, (index * Math.PI) / 2, 0]}>
+            <group position={[0, 0, 0.5]} rotation={[-0.1, 0, 0]}>
+              <GridFin titanium={titanium} carbon={carbon} />
+            </group>
           </group>
-        </group>
-      ))}
+        ))}
+      </group>
 
-      <Legs progress={progress} carbon={carbon} hull={hull} />
+      <Legs
+        progress={progress}
+        carbon={carbon}
+        hull={hull}
+        onBind={(node) => {
+          anchors.current.legs = node
+        }}
+        onFocus={() => setFocus?.('legs')}
+        onBlur={() => setFocus?.(null)}
+      />
 
-      <group position={[0, -1.78, 0]}>
+      <group
+        ref={(node) => {
+          anchors.current.engines = node
+        }}
+        position={[0, -1.78, 0]}
+        onPointerOver={(event) => {
+          event.stopPropagation()
+          setFocus?.('engines')
+        }}
+        onPointerOut={() => setFocus?.(null)}
+      >
         <mesh material={carbon}>
-          <cylinderGeometry args={[0.3, 0.36, 0.2, 20]} />
+          <cylinderGeometry args={[0.3, 0.37, 0.22, 24]} />
         </mesh>
         {[
           [0.18, 0.18],
@@ -209,40 +346,58 @@ export function Rocket({ progress, reducedMotion }: RocketProps) {
           [-0.18, -0.18],
           [0, 0],
         ].map(([x, z]) => (
-          <mesh key={`${x}-${z}`} material={copper} position={[x, -0.2, z]} rotation={[Math.PI, 0, 0]}>
-            <cylinderGeometry args={[0.08, 0.13, 0.38, 16]} />
-          </mesh>
+          <group key={`${x}-${z}`} position={[x, -0.18, z]}>
+            <mesh material={copper} rotation={[Math.PI, 0, 0]}>
+              <cylinderGeometry args={[0.078, 0.132, 0.42, 20]} />
+            </mesh>
+            <mesh material={soot} position={[0, -0.02, 0]} rotation={[Math.PI, 0, 0]}>
+              <cylinderGeometry args={[0.045, 0.08, 0.28, 16]} />
+            </mesh>
+          </group>
         ))}
       </group>
 
-      <group ref={plume} position={[0, -2.15, 0]}>
+      <group ref={plume} position={[0, -2.22, 0]}>
         <mesh>
-          <coneGeometry args={[0.22, 1.55, 18]} />
+          <coneGeometry args={[0.24, 1.7, 20]} />
           <meshBasicMaterial
             color="#ffb14a"
             transparent
-            opacity={0.62}
+            opacity={0.55}
             blending={AdditiveBlending}
             depthWrite={false}
+            toneMapped={false}
           />
         </mesh>
-        <mesh position={[0, -0.45, 0]}>
-          <coneGeometry args={[0.12, 2.15, 16]} />
+        <mesh position={[0, -0.35, 0]}>
+          <coneGeometry args={[0.13, 2.35, 18]} />
           <meshBasicMaterial
             color="#7cf4ff"
             transparent
-            opacity={0.42}
+            opacity={0.4}
             blending={AdditiveBlending}
             depthWrite={false}
+            toneMapped={false}
+          />
+        </mesh>
+        <mesh position={[0, -0.15, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[0.16, 20]} />
+          <meshBasicMaterial
+            color="#fff4d6"
+            transparent
+            opacity={0.7}
+            blending={AdditiveBlending}
+            depthWrite={false}
+            toneMapped={false}
           />
         </mesh>
       </group>
 
       <pointLight
         ref={engineLight}
-        position={[0, -2.0, 0]}
+        position={[0, -2.05, 0]}
         color="#ff9a3c"
-        distance={9}
+        distance={10}
         intensity={0}
       />
     </group>
@@ -253,31 +408,52 @@ function Legs({
   progress,
   carbon,
   hull,
+  onBind,
+  onFocus,
+  onBlur,
 }: {
   progress: MotionValue<number>
-  carbon: MeshStandardMaterial
-  hull: MeshStandardMaterial
+  carbon: MeshPhysicalMaterial
+  hull: MeshPhysicalMaterial
+  onBind: (node: Group | null) => void
+  onFocus: () => void
+  onBlur: () => void
 }) {
   const arms = useRef<Array<Group | null>>([])
 
-  useFrame((state) => {
-    const pose = poseAt(progress.get(), state.clock.elapsedTime)
+  useFrame(() => {
+    const shot = shotAt(progress.get())
     arms.current.forEach((arm) => {
-      if (arm) arm.rotation.x = 0.35 + pose.legs * 1.05
+      if (arm) arm.rotation.x = 0.32 + shot.legs * 1.08
     })
   })
 
   return (
-    <group>
+    <group
+      ref={onBind}
+      onPointerOver={(event) => {
+        event.stopPropagation()
+        onFocus()
+      }}
+      onPointerOut={onBlur}
+    >
       {[0, 1, 2, 3].map((index) => (
         <group key={`leg-${index}`} rotation={[0, (index * Math.PI) / 2 + Math.PI / 4, 0]}>
           <group
             ref={(node) => {
               arms.current[index] = node
             }}
-            position={[0, -1.42, 0.34]}
+            position={[0, -1.38, 0.34]}
           >
-            <LandingLeg carbon={carbon} hull={hull} />
+            <mesh material={carbon} position={[0, -0.28, 0]}>
+              <boxGeometry args={[0.07, 0.22, 0.07]} />
+            </mesh>
+            <mesh material={carbon} position={[0, -0.72, 0]} rotation={[0.06, 0, 0]}>
+              <boxGeometry args={[0.05, 0.95, 0.04]} />
+            </mesh>
+            <mesh material={hull} position={[0, -1.24, 0.14]} rotation={[0.5, 0, 0]}>
+              <boxGeometry args={[0.24, 0.03, 0.34]} />
+            </mesh>
           </group>
         </group>
       ))}

@@ -51,14 +51,14 @@ export function Starfield({ count }: StarfieldProps) {
     const sizes = new Float32Array(count)
 
     for (let i = 0; i < count; i += 1) {
-      const radius = 14 + Math.random() * 62
+      const radius = 8 + Math.pow(Math.random(), 0.55) * 78
       const theta = Math.random() * Math.PI * 2
       const phi = Math.acos(2 * Math.random() - 1)
       positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta)
       positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta)
       positions[i * 3 + 2] = radius * Math.cos(phi)
       phases[i] = Math.random() * Math.PI * 2
-      sizes[i] = 0.85 + Math.random() * 2.4
+      sizes[i] = 0.45 + Math.random() * 2.8 + (radius < 22 ? 1.4 : 0)
     }
 
     const nextGeometry = new BufferGeometry()
