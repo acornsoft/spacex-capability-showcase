@@ -21,7 +21,7 @@ export type ScenePose = {
 }
 
 export const CAMERA_KEYS: readonly CameraKeyframe[] = [
-  { at: 0, position: [3.05, 1.85, 3.45], target: [0.2, 0.25, 0], fov: 30 },
+  { at: 0, position: [4.65, 2.55, 5.35], target: [0.45, 0.15, 0], fov: 36 },
   { at: 0.16, position: [1.55, 0.25, 6.4], target: [0.1, 1.65, 0], fov: 32 },
   { at: 0.34, position: [-3.35, 1.55, 2.95], target: [0.1, 0.75, 0], fov: 28 },
   { at: 0.54, position: [2.35, 4.85, 3.75], target: [0.05, 0.05, 0], fov: 32 },
@@ -86,7 +86,10 @@ export function poseAt(progress: number, time: number): ScenePose {
     grid: remap(p, 0.48, 0.6, 0, 1) * (1 - remap(p, 0.78, 0.95, 0, 0.7)),
     rocketX: remap(p, 0.66, 0.78, 0, 3.4),
     rocketY: remap(p, 0.08, 0.28, 0, 1.15) - remap(p, 0.48, 0.64, 0, 1.35) + remap(p, 0.7, 0.9, 0, 0.35),
-    rocketTilt: remap(p, 0.3, 0.42, 0, 0.16) - remap(p, 0.5, 0.62, 0, 0.12),
+    rocketTilt:
+      0.18 * (1 - range(p, 0, 0.14)) +
+      remap(p, 0.3, 0.42, 0, 0.16) -
+      remap(p, 0.5, 0.62, 0, 0.12),
     rocketYaw: time * 0.12 + p * Math.PI * 1.05,
     rocketScale: remap(p, 0.66, 0.8, 1, 0.58),
   }

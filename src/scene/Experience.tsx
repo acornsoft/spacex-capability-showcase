@@ -30,7 +30,7 @@ export function Experience({
         powerPreference: 'high-performance',
         stencil: false,
       }}
-      camera={{ position: [3.05, 1.85, 3.45], fov: 30, near: 0.1, far: 160 }}
+      camera={{ position: [4.65, 2.55, 5.35], fov: 36, near: 0.1, far: 160 }}
       onCreated={({ gl }) => {
         gl.setClearColor('#030508', 1)
         gl.toneMappingExposure = 1.2

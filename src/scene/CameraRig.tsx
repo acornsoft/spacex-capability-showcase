@@ -12,8 +12,8 @@ type CameraRigProps = {
 export function CameraRig({ progress, reducedMotion }: CameraRigProps) {
   const { camera } = useThree()
   const pointer = useRef({ x: 0, y: 0 })
-  const target = useRef(new Vector3(0.2, 0.25, 0))
-  const desired = useRef(new Vector3(3.05, 1.85, 3.45))
+  const target = useRef(new Vector3(0.45, 0.15, 0))
+  const desired = useRef(new Vector3(4.65, 2.55, 5.35))
 
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
