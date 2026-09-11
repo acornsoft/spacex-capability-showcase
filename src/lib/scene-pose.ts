@@ -1,99 +1,8 @@
-import { clamp01, lerp, range, remap, smoothstep } from '@/lib/math'
+import { clamp01, lerp, range, smootherstep } from '@/lib/math'
 
 export type Vec3 = [number, number, number]
 
-export type CameraKeyframe = {
-  at: number
-  position: Vec3
-  target: Vec3
-  fov: number
-}
-
-export type ScenePose = {
-  engine: number
-  legs: number
-  grid: number
-  rocketX: number
-  rocketY: number
-  rocketTilt: number
-  rocketYaw: number
-  rocketScale: number
-}
-
-export const CAMERA_KEYS: readonly CameraKeyframe[] = [
-  { at: 0, position: [4.65, 2.55, 5.35], target: [0.45, 0.15, 0], fov: 36 },
-  { at: 0.16, position: [1.55, 0.25, 6.4], target: [0.1, 1.65, 0], fov: 32 },
-  { at: 0.34, position: [-3.35, 1.55, 2.95], target: [0.1, 0.75, 0], fov: 28 },
-  { at: 0.54, position: [2.35, 4.85, 3.75], target: [0.05, 0.05, 0], fov: 32 },
-  { at: 0.74, position: [7.6, 2.85, 4.4], target: [4.2, 2.2, 0], fov: 34 },
-  { at: 1, position: [4.15, 1.65, 5.8], target: [2.2, 0.95, 0], fov: 32 },
-] as const
-
-function sampleKeys(progress: number, keys: readonly CameraKeyframe[]): CameraKeyframe {
-  const p = clamp01(progress)
-  if (p <= keys[0].at) return keys[0]
-  const last = keys[keys.length - 1]
-  if (p >= last.at) return last
-
-  for (let i = 0; i < keys.length - 1; i += 1) {
-    const a = keys[i]
-    const b = keys[i + 1]
-    if (p >= a.at && p <= b.at) {
-      const t = smoothstep(range(p, a.at, b.at))
-      return {
-        at: p,
-        position: [
-          lerp(a.position[0], b.position[0], t),
-          lerp(a.position[1], b.position[1], t),
-          lerp(a.position[2], b.position[2], t),
-        ],
-        target: [
-          lerp(a.target[0], b.target[0], t),
-          lerp(a.target[1], b.target[1], t),
-          lerp(a.target[2], b.target[2], t),
-        ],
-        fov: lerp(a.fov, b.fov, t),
-      }
-    }
-  }
-
-  return last
-}
-
-export function cameraAt(progress: number): CameraKeyframe {
-  return sampleKeys(progress, CAMERA_KEYS)
-}
-
-export function poseAt(progress: number, time: number): ScenePose {
-  const p = clamp01(progress)
-
-  const ascent = range(p, 0.06, 0.22)
-  const cruise = range(p, 0.22, 0.4)
-  const precision = range(p, 0.34, 0.5)
-  const landing = range(p, 0.5, 0.66)
-
-  const heroIdle = (1 - range(p, 0, 0.1)) * 0.38
-  const engine = clamp01(
-    heroIdle +
-      ascent * 1.0 * (1 - cruise * 0.28) * (1 - precision * 0.55) +
-      landing * 0.62 +
-      (1 - landing) * 0.08 * range(p, 0.66, 1),
-  )
-
-  return {
-    engine,
-    legs: remap(p, 0.5, 0.64, 0, 1),
-    grid: remap(p, 0.48, 0.6, 0, 1) * (1 - remap(p, 0.78, 0.95, 0, 0.7)),
-    rocketX: remap(p, 0.66, 0.78, 0, 3.4),
-    rocketY: remap(p, 0.08, 0.28, 0, 1.15) - remap(p, 0.48, 0.64, 0, 1.35) + remap(p, 0.7, 0.9, 0, 0.35),
-    rocketTilt:
-      0.18 * (1 - range(p, 0, 0.14)) +
-      remap(p, 0.3, 0.42, 0, 0.16) -
-      remap(p, 0.5, 0.62, 0, 0.12),
-    rocketYaw: time * 0.12 + p * Math.PI * 1.05,
-    rocketScale: remap(p, 0.66, 0.8, 1, 0.58),
-  }
-}
+export type VehiclePart = 'hull' | 'fins' | 'engines' | 'legs' | 'raceway'
 
 export type NarrativeBeat =
   | 'hero'
@@ -103,14 +12,324 @@ export type NarrativeBeat =
   | 'craft'
   | 'contact'
 
+export type Shot = {
+  at: number
+  position: Vec3
+  target: Vec3
+  fov: number
+  yaw: number
+  tilt: number
+  lift: number
+  shiftX: number
+  scale: number
+  engine: number
+  legs: number
+  grid: number
+  horizon: number
+  bloom: number
+}
+
+export const SHOTS: readonly Shot[] = [
+  {
+    at: 0,
+    position: [6.85, 2.55, 3.45],
+    target: [0.35, 0.05, 0],
+    fov: 32,
+    yaw: 0.38,
+    tilt: 0.1,
+    lift: 0.05,
+    shiftX: 0.45,
+    scale: 1,
+    engine: 0.42,
+    legs: 0.12,
+    grid: 0,
+    horizon: 0,
+    bloom: 0.38,
+  },
+  {
+    at: 0.07,
+    position: [6.85, 2.55, 3.45],
+    target: [0.35, 0.05, 0],
+    fov: 32,
+    yaw: 0.38,
+    tilt: 0.1,
+    lift: 0.05,
+    shiftX: 0.45,
+    scale: 1,
+    engine: 0.42,
+    legs: 0.12,
+    grid: 0,
+    horizon: 0,
+    bloom: 0.38,
+  },
+  {
+    at: 0.12,
+    position: [2.55, 1.05, 3.35],
+    target: [0.35, 0.45, 0],
+    fov: 24,
+    yaw: 0.48,
+    tilt: 0.06,
+    lift: 0.08,
+    shiftX: 0.35,
+    scale: 1,
+    engine: 0.22,
+    legs: 0.1,
+    grid: 0,
+    horizon: 0,
+    bloom: 0.22,
+  },
+  {
+    at: 0.18,
+    position: [1.85, -1.55, 3.05],
+    target: [0.2, -1.75, 0],
+    fov: 30,
+    yaw: 0.22,
+    tilt: -0.08,
+    lift: 0.2,
+    shiftX: 0.2,
+    scale: 1,
+    engine: 0.92,
+    legs: 0.08,
+    grid: 0,
+    horizon: 0,
+    bloom: 0.82,
+  },
+  {
+    at: 0.24,
+    position: [2.15, 0.15, 8.4],
+    target: [0.05, 2.35, 0],
+    fov: 42,
+    yaw: 0.12,
+    tilt: 0.04,
+    lift: 1.45,
+    shiftX: 0.1,
+    scale: 1,
+    engine: 1,
+    legs: 0.05,
+    grid: 0,
+    horizon: 0.12,
+    bloom: 0.9,
+  },
+  {
+    at: 0.32,
+    position: [2.15, 0.15, 8.4],
+    target: [0.05, 2.35, 0],
+    fov: 42,
+    yaw: 0.12,
+    tilt: 0.04,
+    lift: 1.55,
+    shiftX: 0.1,
+    scale: 1,
+    engine: 1,
+    legs: 0.05,
+    grid: 0,
+    horizon: 0.12,
+    bloom: 0.85,
+  },
+  {
+    at: 0.38,
+    position: [-5.65, 2.35, 4.45],
+    target: [0.15, 0.85, 0],
+    fov: 30,
+    yaw: 1.15,
+    tilt: 0.1,
+    lift: 0.45,
+    shiftX: 0,
+    scale: 1,
+    engine: 0.28,
+    legs: 0.1,
+    grid: 0,
+    horizon: 0.2,
+    bloom: 0.32,
+  },
+  {
+    at: 0.44,
+    position: [-1.65, 1.55, 2.15],
+    target: [0.12, 1.32, 0],
+    fov: 22,
+    yaw: 1.45,
+    tilt: 0.02,
+    lift: 0.2,
+    shiftX: 0,
+    scale: 1,
+    engine: 0.14,
+    legs: 0.12,
+    grid: 0,
+    horizon: 0,
+    bloom: 0.18,
+  },
+  {
+    at: 0.5,
+    position: [-1.65, 1.55, 2.15],
+    target: [0.12, 1.32, 0],
+    fov: 22,
+    yaw: 1.55,
+    tilt: 0.02,
+    lift: 0.2,
+    shiftX: 0,
+    scale: 1,
+    engine: 0.14,
+    legs: 0.12,
+    grid: 0,
+    horizon: 0,
+    bloom: 0.18,
+  },
+  {
+    at: 0.57,
+    position: [2.65, 6.35, 4.55],
+    target: [0.05, 0.05, 0],
+    fov: 34,
+    yaw: 0.38,
+    tilt: 0.05,
+    lift: -0.85,
+    shiftX: 0.1,
+    scale: 1,
+    engine: 0.58,
+    legs: 1,
+    grid: 1,
+    horizon: 1,
+    bloom: 0.48,
+  },
+  {
+    at: 0.66,
+    position: [2.65, 6.35, 4.55],
+    target: [0.05, 0.05, 0],
+    fov: 34,
+    yaw: 0.42,
+    tilt: 0.05,
+    lift: -0.95,
+    shiftX: 0.1,
+    scale: 1,
+    engine: 0.5,
+    legs: 1,
+    grid: 1,
+    horizon: 1,
+    bloom: 0.42,
+  },
+  {
+    at: 0.76,
+    position: [8.15, 3.15, 5.65],
+    target: [4.4, 2.05, 0],
+    fov: 36,
+    yaw: 1.05,
+    tilt: 0.08,
+    lift: 0.35,
+    shiftX: 3.35,
+    scale: 0.58,
+    engine: 0.12,
+    legs: 0.35,
+    grid: 0.15,
+    horizon: 0.2,
+    bloom: 0.2,
+  },
+  {
+    at: 1,
+    position: [4.85, 2.15, 7.45],
+    target: [1.85, 1.05, 0],
+    fov: 32,
+    yaw: 0.7,
+    tilt: 0.1,
+    lift: 0.25,
+    shiftX: 1.7,
+    scale: 0.72,
+    engine: 0.18,
+    legs: 0.2,
+    grid: 0,
+    horizon: 0.1,
+    bloom: 0.28,
+  },
+] as const
+
+function lerpShot(a: Shot, b: Shot, t: number): Shot {
+  const s = smootherstep(t)
+  return {
+    at: lerp(a.at, b.at, s),
+    position: [
+      lerp(a.position[0], b.position[0], s),
+      lerp(a.position[1], b.position[1], s),
+      lerp(a.position[2], b.position[2], s),
+    ],
+    target: [
+      lerp(a.target[0], b.target[0], s),
+      lerp(a.target[1], b.target[1], s),
+      lerp(a.target[2], b.target[2], s),
+    ],
+    fov: lerp(a.fov, b.fov, s),
+    yaw: lerp(a.yaw, b.yaw, s),
+    tilt: lerp(a.tilt, b.tilt, s),
+    lift: lerp(a.lift, b.lift, s),
+    shiftX: lerp(a.shiftX, b.shiftX, s),
+    scale: lerp(a.scale, b.scale, s),
+    engine: lerp(a.engine, b.engine, s),
+    legs: lerp(a.legs, b.legs, s),
+    grid: lerp(a.grid, b.grid, s),
+    horizon: lerp(a.horizon, b.horizon, s),
+    bloom: lerp(a.bloom, b.bloom, s),
+  }
+}
+
+export function shotAt(progress: number): Shot {
+  const p = clamp01(progress)
+  const first = SHOTS[0]
+  const last = SHOTS[SHOTS.length - 1]
+  if (p <= first.at) return first
+  if (p >= last.at) return last
+
+  for (let i = 0; i < SHOTS.length - 1; i += 1) {
+    const a = SHOTS[i]
+    const b = SHOTS[i + 1]
+    if (p >= a.at && p <= b.at) {
+      return lerpShot(a, b, range(p, a.at, b.at))
+    }
+  }
+
+  return last
+}
+
 export function beatAt(progress: number): NarrativeBeat {
   const p = clamp01(progress)
-  if (p < 0.12) return 'hero'
-  if (p < 0.32) return 'ascent'
-  if (p < 0.5) return 'precision'
-  if (p < 0.68) return 'reuse'
+  if (p < 0.16) return 'hero'
+  if (p < 0.36) return 'ascent'
+  if (p < 0.54) return 'precision'
+  if (p < 0.7) return 'reuse'
   if (p < 0.88) return 'craft'
   return 'contact'
+}
+
+export function beatFocus(beat: NarrativeBeat): VehiclePart | null {
+  switch (beat) {
+    case 'hero':
+      return null
+    case 'ascent':
+      return 'engines'
+    case 'precision':
+      return 'fins'
+    case 'reuse':
+      return 'legs'
+    case 'craft':
+      return null
+    case 'contact':
+      return null
+    default: {
+      const _exhaustive: never = beat
+      return _exhaustive
+    }
+  }
+}
+
+export function chapterPart(id: string): VehiclePart | null {
+  switch (id) {
+    case 'ascent':
+      return 'engines'
+    case 'precision':
+      return 'fins'
+    case 'reuse':
+      return 'legs'
+    case 'craft':
+      return 'hull'
+    default:
+      return null
+  }
 }
 
 export function assertNever(value: never): never {

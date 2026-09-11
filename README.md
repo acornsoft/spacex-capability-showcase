@@ -2,29 +2,45 @@
 
 A public engineering capability demo built by **Acornsoft** for a SpaceX-audience pitch. It is a scroll-driven 3D brief that shows what we can design, animate, and ship — not a partnership, contract, or claim of prior SpaceX work.
 
-Live (once GitHub Pages is enabled on `main`):  
-[https://acornsoft.github.io/spacex-capability-showcase/](https://acornsoft.github.io/spacex-capability-showcase/)
+Live: [https://acornsoft.github.io/spacex-capability-showcase/](https://acornsoft.github.io/spacex-capability-showcase/)
+
+## v2 craft
+
+v1 proved the stack. v2 is a cinematic 3D pass **plus** UI craft aimed at the refs David locked with Kyle — not a generic Apple/Linear/Stripe clone.
+
+**3D:** authored shots, PBR vehicle, adaptive bloom (unchanged direction).
+
+**UI / motion (this pass):** expensive glass, micro-interactions, dense shippable blocks.
+
+| Ref | What we took |
+| --- | --- |
+| [Spectrum UI](https://ui.spectrumhq.in) | Spotlight + 3D tilt cards, number tickers, live status pill, beam-border cards |
+| [React Bits](https://reactbits.dev) | Split-text blur-in, magnetic metric chips, hover glare |
+| [21st.dev](https://21st.dev) | Shimmer CTAs, morphing nav pill |
+| [shadcnblocks](https://www.shadcnblocks.com) | Dense capability blocks, announcement pill, shippable card density |
+| [evilcharts](https://evilcharts.com) | Animated telemetry sparklines on the systems beat |
+| [ui.shadcn.com](https://ui.shadcn.com) / Layers / DesignMD | Tokenized glass, calm layout under risky motion |
+
+Skipped: retro 8-bit, cute video aesthetics. Dual-tone **Good Design. Dangerous Motion.** stays the hook.
 
 ## What this proves
 
-The page is the proof. A stylized reusable vehicle (primitives only) sits in a starfield; the camera scrubs with scroll; glass HUD chapters and capability cards stay readable over the scene.
-
 | Capability | How this site demonstrates it |
 | --- | --- |
-| Real-time 3D & WebGL | Custom R3F scene, primitive-built spacecraft, scroll-scrubbed camera |
-| Scroll-driven storytelling | Ascent → systems → reusability → craft cards as one cinematic through-line |
-| Performance-minded React | DPR clamp, limited lights, mobile star budget, geometry disposal, WebGL fallback |
-| Design systems & motion | Dual-tone headline, glass surfaces, Framer Motion as punctuation |
+| Real-time 3D & WebGL | Custom R3F scene, primitive-built spacecraft, postprocessed PBR |
+| Scroll-driven storytelling | Authored camera beats with interstitial atmosphere, not a card stack |
+| Performance-minded React | Adaptive quality, mobile star budget, bloom budget, WebGL fallback |
+| Design systems & motion | Dual-tone headline, glass HUD, magnetic chips, part callouts |
 | Production shipping | Typed Vite static build + GitHub Pages workflow from `main` / `dist` |
-| Integration-ready UIs | Telemetry-style overlays that can sit on live data later |
+| Integration-ready UIs | Telemetry overlays and focus states that can sit on live data later |
 
-Copy is framed as **“what Acornsoft can build.”** Floating chips are labeled as **illustrative demo metrics**, not operational or SpaceX statistics.
+Copy is framed as **“what Acornsoft can build.”** Floating chips are **illustrative demo metrics**, not operational or SpaceX statistics.
 
 ## Stack
 
 - Vite + React 19 + TypeScript
 - Tailwind CSS v4
-- React Three Fiber + `@react-three/drei`
+- React Three Fiber + `@react-three/drei` + `@react-three/postprocessing`
 - Framer Motion
 - Static `base` set to `/spacex-capability-showcase/` for GitHub Pages
 
@@ -48,12 +64,8 @@ npm run preview
 
 A workflow at `.github/workflows/deploy-pages.yml` builds on every push to `main` and deploys the `dist` artifact with `actions/deploy-pages`.
 
-One-time repo settings:
-
-1. **Settings → Pages → Source:** GitHub Actions
-2. Merge to `main` (or run the workflow manually)
-3. Confirm the site at `https://acornsoft.github.io/spacex-capability-showcase/`
+After merge to `main`, the live site refreshes at `https://acornsoft.github.io/spacex-capability-showcase/`.
 
 ## Design notes
 
-Dark aerospace palette: void blacks, cool whites, restrained cyan and amber. Desktop-first motion; star count and antialiasing step down on coarse pointers. If WebGL is missing, the same brief renders as a static document.
+Dark aerospace palette: void blacks, cool whites, restrained cyan and amber. Desktop-first motion; star count, antialiasing, and bloom step down on coarse pointers or when the frame budget slips. If WebGL is missing, the same brief renders as a static document.

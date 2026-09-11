@@ -11,6 +11,11 @@ export function smoothstep(t: number): number {
   return x * x * (3 - 2 * x)
 }
 
+export function smootherstep(t: number): number {
+  const x = clamp01(t)
+  return x * x * x * (x * (x * 6 - 15) + 10)
+}
+
 export function range(progress: number, start: number, end: number): number {
   if (end === start) return progress >= end ? 1 : 0
   return clamp01((progress - start) / (end - start))

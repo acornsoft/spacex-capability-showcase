@@ -47,13 +47,14 @@ body {
 }
 
 @utility glass {
-  background: color-mix(in srgb, #0c121a 52%, transparent);
-  backdrop-filter: blur(22px) saturate(1.25);
-  border: 1px solid color-mix(in srgb, white 18%, transparent);
+  background: color-mix(in srgb, #0c121a 46%, transparent);
+  backdrop-filter: blur(24px) saturate(1.35);
+  border: 1px solid color-mix(in srgb, white 20%, transparent);
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 14%, transparent),
-    0 0 0 1px color-mix(in srgb, #3ee0e8 12%, transparent),
-    0 22px 56px color-mix(in srgb, black 48%, transparent);
+    inset 0 1px 0 color-mix(in srgb, white 18%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #3ee0e8 8%, transparent),
+    0 0 0 1px color-mix(in srgb, #3ee0e8 14%, transparent),
+    0 24px 64px color-mix(in srgb, black 52%, transparent);
 }
 
 @utility glass-strong {
@@ -74,4 +75,144 @@ body {
   background:
     radial-gradient(ellipse 70% 55% at 58% 46%, transparent 0%, rgb(3 5 8 / 0.18) 52%, rgb(3 5 8 / 0.78) 100%),
     linear-gradient(180deg, rgb(3 5 8 / 0.35) 0%, transparent 18%, transparent 78%, rgb(3 5 8 / 0.72) 100%);
+}
+
+.spotlight-card {
+  background:
+    radial-gradient(
+      420px circle at var(--spot-x, 40%) var(--spot-y, 20%),
+      color-mix(in srgb, var(--color-cyan) 16%, transparent),
+      transparent 42%
+    ),
+    color-mix(in srgb, #0c121a 46%, transparent);
+}
+
+.spotlight-card::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    120deg,
+    transparent 40%,
+    color-mix(in srgb, white 7%, transparent) 48%,
+    transparent 56%
+  );
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.spotlight-card:hover::after {
+  opacity: 1;
+}
+
+.shimmer-btn {
+  background: var(--color-frost);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 70%, transparent),
+    0 0 0 1px color-mix(in srgb, white 12%, transparent),
+    0 10px 30px color-mix(in srgb, black 35%, transparent);
+}
+
+.shimmer-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    color-mix(in srgb, var(--color-cyan) 55%, white) 48%,
+    transparent 76%
+  );
+  transform: translateX(-130%);
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
+}
+
+.shimmer-btn.is-cyan {
+  background: var(--color-cyan);
+}
+
+.shimmer-btn.is-cyan:hover {
+  background: var(--color-frost);
+}
+
+.border-beam::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from 180deg,
+    transparent 55%,
+    var(--color-cyan) 72%,
+    var(--color-amber) 82%,
+    transparent 92%
+  );
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  animation: beam-spin 7s linear infinite;
+  pointer-events: none;
+}
+
+.status-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: var(--color-cyan);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-cyan) 70%, transparent);
+  animation: status-pulse 1.8s ease-out infinite;
+}
+
+.spark-stroke {
+  stroke-dasharray: 180;
+  stroke-dashoffset: 180;
+  animation: spark-draw 1.4s ease forwards;
+}
+
+@keyframes shimmer-sweep {
+  100% {
+    transform: translateX(130%);
+  }
+}
+
+@keyframes beam-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes status-pulse {
+  70% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes spark-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-btn::before,
+  .border-beam::before,
+  .status-dot,
+  .spark-stroke {
+    animation: none;
+  }
+
+  .spark-stroke {
+    stroke-dashoffset: 0;
+  }
 }
