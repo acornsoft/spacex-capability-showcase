@@ -23,7 +23,7 @@ export function PartCallouts() {
           >
             <div className="flex items-center gap-2">
               <span className="h-px w-8 bg-cyan" />
-              <span className="glass rounded-full px-2.5 py-1 font-mono text-[0.58rem] uppercase tracking-[0.18em] text-cyan">
+              <span className="glass rounded-full px-2.5 py-1 font-mono text-[0.58rem] uppercase tracking-[0.18em] text-cyan ring-1 ring-cyan/30">
                 {mark.label}
               </span>
             </div>

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { CAPABILITIES } from '@/content'
 import { useDirector } from '@/lib/director'
+import { SpotlightCard } from '@/ui/craft'
 
 export function Capabilities() {
   const { setChapterFocus } = useDirector()
@@ -26,25 +27,32 @@ export function Capabilities() {
 
       <div className="relative z-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {CAPABILITIES.map((card, index) => (
-          <motion.article
+          <motion.div
             key={card.id}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.35 }}
             transition={{ duration: 0.55, delay: index * 0.05 }}
-            whileHover={{ y: -6, scale: 1.01 }}
-            className="glass pointer-events-auto rounded-3xl bg-ink/75 p-6"
-            onMouseEnter={() => setChapterFocus('hull')}
-            onMouseLeave={() => setChapterFocus(null)}
+            className={index === 0 ? 'md:col-span-2 xl:col-span-1' : ''}
           >
-            <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-cyan">
-              {card.index}
-            </p>
-            <h3 className="mt-3 font-display text-xl font-semibold text-frost">
-              {card.title}
-            </h3>
-            <p className="mt-3 text-sm leading-relaxed text-mist">{card.body}</p>
-          </motion.article>
+            <SpotlightCard
+              beam={index < 2}
+              className="pointer-events-auto group h-full rounded-3xl bg-ink/40 p-6"
+              onMouseEnter={() => setChapterFocus('hull')}
+              onMouseLeave={() => setChapterFocus(null)}
+            >
+              <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-cyan">
+                {card.index}
+              </p>
+              <h3 className="mt-3 font-display text-xl font-semibold text-frost">
+                {card.title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-mist">{card.body}</p>
+              <p className="mt-4 font-mono text-[0.58rem] uppercase tracking-[0.16em] text-steel transition-transform group-hover:translate-x-1 group-hover:text-cyan">
+                Inspect the craft →
+              </p>
+            </SpotlightCard>
+          </motion.div>
         ))}
       </div>
     </section>

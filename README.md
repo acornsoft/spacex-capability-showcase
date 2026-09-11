@@ -6,12 +6,22 @@ Live: [https://acornsoft.github.io/spacex-capability-showcase/](https://acornsof
 
 ## v2 craft
 
-v1 proved the stack. v2 is a cinematic pass so the site can sit next to top WebGL marketing pages:
+v1 proved the stack. v2 is a cinematic 3D pass **plus** UI craft aimed at the refs David locked with Kyle — not a generic Apple/Linear/Stripe clone.
 
-- **Authored shots** instead of a spinning hero: hold, hull push-in, engine close-up, ascent wide, orbit/fin telephoto, recovery with horizon, then the vehicle recedes for craft/contact.
-- **PBR vehicle** — physical metals, clearcoat hull, panel splits, heat-shield tiles, copper bells, titanium grid fins. Studio environment + ACES tone mapping. Soft bloom (adaptive; drops off if FPS dips).
-- **Interaction** — chapter nav and the right-hand sequence rail drive the camera by scrolling to authored beats. Hover a chapter or a vehicle part to isolate engines, fins, legs, or raceway with HUD callouts. Metric chips are magnetic to the pointer.
-- **Performance** — DPR clamp, `PerformanceMonitor` quality floor, bloom off on coarse pointers / reduced motion / low FPS, geometry disposal, WebGL fallback.
+**3D:** authored shots, PBR vehicle, adaptive bloom (unchanged direction).
+
+**UI / motion (this pass):** expensive glass, micro-interactions, dense shippable blocks.
+
+| Ref | What we took |
+| --- | --- |
+| [Spectrum UI](https://ui.spectrumhq.in) | Spotlight + 3D tilt cards, number tickers, live status pill, beam-border cards |
+| [React Bits](https://reactbits.dev) | Split-text blur-in, magnetic metric chips, hover glare |
+| [21st.dev](https://21st.dev) | Shimmer CTAs, morphing nav pill |
+| [shadcnblocks](https://www.shadcnblocks.com) | Dense capability blocks, announcement pill, shippable card density |
+| [evilcharts](https://evilcharts.com) | Animated telemetry sparklines on the systems beat |
+| [ui.shadcn.com](https://ui.shadcn.com) / Layers / DesignMD | Tokenized glass, calm layout under risky motion |
+
+Skipped: retro 8-bit, cute video aesthetics. Dual-tone **Good Design. Dangerous Motion.** stays the hook.
 
 ## What this proves
 

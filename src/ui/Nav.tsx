@@ -3,17 +3,8 @@ import { NAV_LINKS, SITE } from '@/content'
 import { useDirector } from '@/lib/director'
 import { assertNever, type NarrativeBeat } from '@/lib/scene-pose'
 
-const BEAT_HREF: Record<string, NarrativeBeat | 'hero'> = {
-  ascent: 'ascent',
-  precision: 'precision',
-  reuse: 'reuse',
-  craft: 'craft',
-  contact: 'contact',
-}
-
 function beatActive(beat: NarrativeBeat, id: string): boolean {
-  const mapped = BEAT_HREF[id]
-  return mapped === beat
+  return id === beat
 }
 
 export function Nav() {
@@ -40,26 +31,32 @@ export function Nav() {
         </span>
       </button>
 
-      <nav className="pointer-events-auto glass-strong hidden items-center gap-1 rounded-full px-1.5 py-1.5 md:flex">
-        {NAV_LINKS.map((link) => (
-          <button
-            key={link.id}
-            type="button"
-            onClick={() => goTo(link.id)}
-            className={`rounded-full px-3 py-1.5 font-mono text-[0.68rem] uppercase tracking-[0.16em] transition-colors ${
-              beatActive(beat, link.id)
-                ? 'bg-frost/10 text-frost'
-                : 'text-mist/70 hover:text-frost'
-            }`}
-          >
-            {link.label}
-          </button>
-        ))}
+      <nav className="pointer-events-auto glass-strong relative hidden items-center gap-1 rounded-full px-1.5 py-1.5 md:flex">
+        {NAV_LINKS.map((link) => {
+          const active = beatActive(beat, link.id)
+          return (
+            <button
+              key={link.id}
+              type="button"
+              onClick={() => goTo(link.id)}
+              className="relative rounded-full px-3 py-1.5 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-mist/70 transition-colors hover:text-frost"
+            >
+              {active ? (
+                <motion.span
+                  layoutId="nav-pill"
+                  className="absolute inset-0 rounded-full bg-frost/10 ring-1 ring-cyan/30"
+                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                />
+              ) : null}
+              <span className={`relative z-10 ${active ? 'text-frost' : ''}`}>{link.label}</span>
+            </button>
+          )
+        })}
       </nav>
 
       <a
         href={SITE.mailto}
-        className="pointer-events-auto glass rounded-full px-3.5 py-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-cyan"
+        className="pointer-events-auto glass rounded-full px-3.5 py-2 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-cyan transition-colors hover:text-frost"
       >
         Contact
       </a>
@@ -92,9 +89,15 @@ export function SequenceRail() {
                   active ? 'text-cyan' : 'text-steel/70 hover:text-mist'
                 }`}
               >
-                <span
-                  className={`block h-px w-4 ${active ? 'bg-cyan' : 'bg-white/20'}`}
-                />
+                <span className="relative block h-px w-5 overflow-hidden bg-white/15">
+                  {active ? (
+                    <motion.span
+                      layoutId="rail-fill"
+                      className="absolute inset-0 bg-cyan"
+                      transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                    />
+                  ) : null}
+                </span>
                 {item.label}
               </button>
             </li>

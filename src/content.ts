@@ -91,18 +91,38 @@ export const CAPABILITIES = [
 export type CapabilityId = (typeof CAPABILITIES)[number]['id']
 
 export const METRICS = [
-  { id: 'frame', label: 'Frame budget', value: '16.6', unit: 'ms', anchor: { x: 54, y: 16 } },
-  { id: 'draw', label: 'Draw calls', value: '1.2', unit: 'k', anchor: { x: 78, y: 20 } },
-  { id: 'dpr', label: 'DPR clamp', value: '1.75', unit: '×', anchor: { x: 80, y: 50 } },
-  { id: 'stars', label: 'Star budget', value: '3.2', unit: 'k', anchor: { x: 52, y: 64 } },
-  { id: 'reuse', label: 'Reuse cycle', value: '01', unit: '', anchor: { x: 74, y: 76 } },
+  { id: 'frame', label: 'Frame budget', value: 16.6, unit: 'ms', decimals: 1, anchor: { x: 54, y: 16 } },
+  { id: 'draw', label: 'Draw calls', value: 1.2, unit: 'k', decimals: 1, anchor: { x: 78, y: 20 } },
+  { id: 'dpr', label: 'DPR clamp', value: 1.75, unit: '×', decimals: 2, anchor: { x: 80, y: 50 } },
+  { id: 'stars', label: 'Star budget', value: 3.2, unit: 'k', decimals: 1, anchor: { x: 52, y: 64 } },
+  { id: 'reuse', label: 'Reuse cycle', value: 1, unit: '', decimals: 0, anchor: { x: 74, y: 76 } },
 ] as const
 
 export const TELEMETRY = [
-  { key: 'ATT', label: 'Attitude lock', value: 'NOMINAL' },
-  { key: 'GNC', label: 'Guidance loop', value: '12 ms' },
-  { key: 'THL', label: 'Throttle map', value: 'SCRUB' },
-  { key: 'BUS', label: 'Render bus', value: 'R3F' },
+  {
+    key: 'ATT',
+    label: 'Attitude lock',
+    value: 'NOMINAL',
+    spark: [0.42, 0.48, 0.44, 0.61, 0.58, 0.72, 0.69, 0.81, 0.77, 0.9],
+  },
+  {
+    key: 'GNC',
+    label: 'Guidance loop',
+    value: '12 ms',
+    spark: [18, 16, 15, 14, 13, 12.4, 12.1, 12, 11.8, 12],
+  },
+  {
+    key: 'THL',
+    label: 'Throttle map',
+    value: 'SCRUB',
+    spark: [0.2, 0.35, 0.55, 0.8, 1, 0.92, 0.7, 0.48, 0.3, 0.22],
+  },
+  {
+    key: 'BUS',
+    label: 'Render bus',
+    value: 'R3F',
+    spark: [0.5, 0.62, 0.58, 0.7, 0.66, 0.78, 0.74, 0.86, 0.9, 0.84],
+  },
 ] as const
 
 export const CONTACT = {
