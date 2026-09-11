@@ -13,18 +13,20 @@ export type ScenePose = {
   engine: number
   legs: number
   grid: number
+  rocketX: number
   rocketY: number
   rocketTilt: number
   rocketYaw: number
+  rocketScale: number
 }
 
 export const CAMERA_KEYS: readonly CameraKeyframe[] = [
-  { at: 0, position: [3.35, 1.35, 5.55], target: [0.35, 0.95, 0], fov: 40 },
-  { at: 0.16, position: [1.15, 0.15, 8.4], target: [0, 2.15, 0], fov: 36 },
-  { at: 0.34, position: [-4.6, 2.55, 3.15], target: [0.05, 1.15, 0], fov: 30 },
-  { at: 0.54, position: [2.55, 6.2, 4.15], target: [0, 0.35, 0], fov: 34 },
-  { at: 0.74, position: [5.4, 1.55, 7.05], target: [-0.15, 1.05, 0], fov: 38 },
-  { at: 1, position: [0.9, 2.2, 9.2], target: [0, 1.15, 0], fov: 34 },
+  { at: 0, position: [3.05, 1.85, 3.45], target: [0.2, 0.25, 0], fov: 30 },
+  { at: 0.16, position: [1.55, 0.25, 6.4], target: [0.1, 1.65, 0], fov: 32 },
+  { at: 0.34, position: [-3.35, 1.55, 2.95], target: [0.1, 0.75, 0], fov: 28 },
+  { at: 0.54, position: [2.35, 4.85, 3.75], target: [0.05, 0.05, 0], fov: 32 },
+  { at: 0.74, position: [7.6, 2.85, 4.4], target: [4.2, 2.2, 0], fov: 34 },
+  { at: 1, position: [4.15, 1.65, 5.8], target: [2.2, 0.95, 0], fov: 32 },
 ] as const
 
 function sampleKeys(progress: number, keys: readonly CameraKeyframe[]): CameraKeyframe {
@@ -70,17 +72,23 @@ export function poseAt(progress: number, time: number): ScenePose {
   const precision = range(p, 0.34, 0.5)
   const landing = range(p, 0.5, 0.66)
 
+  const heroIdle = (1 - range(p, 0, 0.1)) * 0.38
   const engine = clamp01(
-    ascent * 1.0 * (1 - cruise * 0.28) * (1 - precision * 0.55) + landing * 0.62 + (1 - landing) * 0.08 * range(p, 0.66, 1),
+    heroIdle +
+      ascent * 1.0 * (1 - cruise * 0.28) * (1 - precision * 0.55) +
+      landing * 0.62 +
+      (1 - landing) * 0.08 * range(p, 0.66, 1),
   )
 
   return {
     engine,
     legs: remap(p, 0.5, 0.64, 0, 1),
     grid: remap(p, 0.48, 0.6, 0, 1) * (1 - remap(p, 0.78, 0.95, 0, 0.7)),
-    rocketY: remap(p, 0.08, 0.28, 0, 1.35) - remap(p, 0.48, 0.64, 0, 1.55) + remap(p, 0.7, 0.9, 0, 0.55),
-    rocketTilt: remap(p, 0.3, 0.42, 0, 0.18) - remap(p, 0.5, 0.62, 0, 0.14),
-    rocketYaw: time * 0.08 + p * Math.PI * 1.15,
+    rocketX: remap(p, 0.66, 0.78, 0, 3.4),
+    rocketY: remap(p, 0.08, 0.28, 0, 1.15) - remap(p, 0.48, 0.64, 0, 1.35) + remap(p, 0.7, 0.9, 0, 0.35),
+    rocketTilt: remap(p, 0.3, 0.42, 0, 0.16) - remap(p, 0.5, 0.62, 0, 0.12),
+    rocketYaw: time * 0.12 + p * Math.PI * 1.05,
+    rocketScale: remap(p, 0.66, 0.8, 1, 0.58),
   }
 }
 

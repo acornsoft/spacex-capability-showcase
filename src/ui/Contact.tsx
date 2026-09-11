@@ -7,11 +7,12 @@ export function Contact() {
       id="contact"
       className="relative flex min-h-[100svh] items-end px-5 pb-16 pt-24 md:items-center md:px-10"
     >
+      <div className="pointer-events-none absolute inset-0 bg-void/40" />
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.4 }}
-        className="glass w-full max-w-2xl rounded-3xl p-7 md:p-10"
+        className="glass relative z-10 w-full max-w-2xl rounded-3xl p-7 md:p-10"
       >
         <p className="type-kicker">{CONTACT.kicker}</p>
         <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-frost md:text-5xl">

@@ -19,7 +19,7 @@ const vertexShader = /* glsl */ `
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
     vTwinkle = 0.62 + 0.38 * sin(uTime * 1.55 + aPhase);
     gl_Position = projectionMatrix * mvPosition;
-    gl_PointSize = aSize * uPixelRatio * (280.0 / -mvPosition.z) * vTwinkle;
+    gl_PointSize = aSize * uPixelRatio * (340.0 / -mvPosition.z) * vTwinkle;
   }
 `
 
@@ -30,11 +30,11 @@ const fragmentShader = /* glsl */ `
     vec2 uv = gl_PointCoord - 0.5;
     float dist = length(uv);
     if (dist > 0.5) discard;
-    float core = smoothstep(0.5, 0.04, dist);
-    vec3 cool = vec3(0.24, 0.88, 0.91);
-    vec3 white = vec3(0.96, 0.97, 1.0);
+    float core = smoothstep(0.5, 0.03, dist);
+    vec3 cool = vec3(0.35, 0.92, 0.95);
+    vec3 white = vec3(1.0, 0.99, 0.97);
     vec3 color = mix(cool, white, core);
-    gl_FragColor = vec4(color, core * vTwinkle);
+    gl_FragColor = vec4(color, core * min(1.0, vTwinkle * 1.15));
   }
 `
 
@@ -51,14 +51,14 @@ export function Starfield({ count }: StarfieldProps) {
     const sizes = new Float32Array(count)
 
     for (let i = 0; i < count; i += 1) {
-      const radius = 28 + Math.random() * 90
+      const radius = 14 + Math.random() * 62
       const theta = Math.random() * Math.PI * 2
       const phi = Math.acos(2 * Math.random() - 1)
       positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta)
       positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta)
       positions[i * 3 + 2] = radius * Math.cos(phi)
       phases[i] = Math.random() * Math.PI * 2
-      sizes[i] = 0.55 + Math.random() * 1.85
+      sizes[i] = 0.85 + Math.random() * 2.4
     }
 
     const nextGeometry = new BufferGeometry()

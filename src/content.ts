@@ -91,11 +91,11 @@ export const CAPABILITIES = [
 export type CapabilityId = (typeof CAPABILITIES)[number]['id']
 
 export const METRICS = [
-  { id: 'frame', label: 'Frame budget', value: '16.6', unit: 'ms', anchor: { x: 18, y: 22 } },
-  { id: 'draw', label: 'Draw calls', value: '1.2', unit: 'k', anchor: { x: 78, y: 18 } },
-  { id: 'dpr', label: 'DPR clamp', value: '1.75', unit: '×', anchor: { x: 82, y: 54 } },
-  { id: 'stars', label: 'Star budget', value: '3.2', unit: 'k', anchor: { x: 14, y: 58 } },
-  { id: 'reuse', label: 'Reuse cycle', value: '01', unit: '', anchor: { x: 72, y: 78 } },
+  { id: 'frame', label: 'Frame budget', value: '16.6', unit: 'ms', anchor: { x: 54, y: 16 } },
+  { id: 'draw', label: 'Draw calls', value: '1.2', unit: 'k', anchor: { x: 78, y: 20 } },
+  { id: 'dpr', label: 'DPR clamp', value: '1.75', unit: '×', anchor: { x: 80, y: 50 } },
+  { id: 'stars', label: 'Star budget', value: '3.2', unit: 'k', anchor: { x: 52, y: 64 } },
+  { id: 'reuse', label: 'Reuse cycle', value: '01', unit: '', anchor: { x: 74, y: 76 } },
 ] as const
 
 export const TELEMETRY = [

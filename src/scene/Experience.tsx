@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import { pixelRatioBudget } from '@/lib/runtime'
 import { CameraRig } from '@/scene/CameraRig'
 import { Rocket } from '@/scene/Rocket'
-import { Lights, Stage } from '@/scene/Stage'
+import { Lights, OrbitGuides, Stage } from '@/scene/Stage'
 import { NebulaWash, Starfield } from '@/scene/Starfield'
 
 type ExperienceProps = {
@@ -30,9 +30,10 @@ export function Experience({
         powerPreference: 'high-performance',
         stencil: false,
       }}
-      camera={{ position: [3.35, 1.35, 5.55], fov: 40, near: 0.1, far: 160 }}
+      camera={{ position: [3.05, 1.85, 3.45], fov: 30, near: 0.1, far: 160 }}
       onCreated={({ gl }) => {
         gl.setClearColor('#030508', 1)
+        gl.toneMappingExposure = 1.2
       }}
     >
       <Suspense fallback={null}>
@@ -40,6 +41,7 @@ export function Experience({
         <Lights />
         <Starfield count={starCount} />
         <NebulaWash />
+        <OrbitGuides />
         <Rocket progress={progress} reducedMotion={reducedMotion} />
         <Stage progress={progress} />
         <fog attach="fog" args={['#030508', 12, 55]} />

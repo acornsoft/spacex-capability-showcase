@@ -4,11 +4,12 @@ import { CAPABILITIES } from '@/content'
 export function Capabilities() {
   return (
     <section id="craft" className="relative px-5 py-28 md:px-10 md:py-36">
+      <div className="pointer-events-none absolute inset-0 bg-void/50" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.4 }}
-        className="mb-10 max-w-2xl"
+        className="relative z-10 mb-10 max-w-2xl"
       >
         <p className="type-kicker">04  /  Proven here</p>
         <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-frost md:text-5xl">
@@ -20,7 +21,7 @@ export function Capabilities() {
         </p>
       </motion.div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="relative z-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {CAPABILITIES.map((card, index) => (
           <motion.article
             key={card.id}
@@ -29,7 +30,7 @@ export function Capabilities() {
             viewport={{ once: true, amount: 0.35 }}
             transition={{ duration: 0.55, delay: index * 0.05 }}
             whileHover={{ y: -6, scale: 1.01 }}
-            className="glass pointer-events-auto rounded-3xl p-6"
+            className="glass pointer-events-auto rounded-3xl bg-ink/70 p-6"
           >
             <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-cyan">
               {card.index}
