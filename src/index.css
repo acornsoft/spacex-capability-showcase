@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+
+  --color-void: #030508;
+  --color-ink: #070b11;
+  --color-panel: #0c121a;
+  --color-steel: #8b9bb0;
+  --color-mist: #c5d0dc;
+  --color-frost: #eef3f8;
+  --color-cyan: #3ee0e8;
+  --color-cyan-dim: #1a4a50;
+  --color-amber: #e8a54b;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--color-void);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--color-void);
+  color: var(--color-frost);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100%;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-cyan) 35%, transparent);
+  color: var(--color-frost);
+}
+
+@utility glass {
+  background: color-mix(in srgb, #0c121a 52%, transparent);
+  backdrop-filter: blur(22px) saturate(1.25);
+  border: 1px solid color-mix(in srgb, white 18%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 14%, transparent),
+    0 0 0 1px color-mix(in srgb, #3ee0e8 12%, transparent),
+    0 22px 56px color-mix(in srgb, black 48%, transparent);
+}
+
+@utility glass-strong {
+  background: color-mix(in srgb, #0c121a 72%, transparent);
+  backdrop-filter: blur(22px) saturate(1.2);
+  border: 1px solid color-mix(in srgb, white 14%, transparent);
+}
+
+@utility type-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-cyan);
+}
+
+@utility vignette {
+  background:
+    radial-gradient(ellipse 70% 55% at 58% 46%, transparent 0%, rgb(3 5 8 / 0.18) 52%, rgb(3 5 8 / 0.78) 100%),
+    linear-gradient(180deg, rgb(3 5 8 / 0.35) 0%, transparent 18%, transparent 78%, rgb(3 5 8 / 0.72) 100%);
+}
