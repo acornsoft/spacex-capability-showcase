@@ -98,16 +98,16 @@ function GridFin({
         <boxGeometry args={[0.07, 0.055, 0.2]} />
       </mesh>
       <mesh material={carbon} position={[0, 0, 0.015]}>
-        <boxGeometry args={[0.4, 0.34, 0.016]} />
+        <boxGeometry args={[0.32, 0.26, 0.014]} />
       </mesh>
-      {[-0.13, -0.045, 0.045, 0.13].map((x) => (
-        <mesh key={`v-${x}`} material={titanium} position={[x, 0, 0.028]}>
-          <boxGeometry args={[0.014, 0.3, 0.012]} />
+      {[-0.1, -0.035, 0.035, 0.1].map((x) => (
+        <mesh key={`v-${x}`} material={titanium} position={[x, 0, 0.026]}>
+          <boxGeometry args={[0.012, 0.22, 0.01]} />
         </mesh>
       ))}
-      {[-0.1, 0, 0.1].map((y) => (
-        <mesh key={`h-${y}`} material={titanium} position={[0, y, 0.028]}>
-          <boxGeometry args={[0.34, 0.012, 0.01]} />
+      {[-0.07, 0, 0.07].map((y) => (
+        <mesh key={`h-${y}`} material={titanium} position={[0, y, 0.026]}>
+          <boxGeometry args={[0.26, 0.01, 0.008]} />
         </mesh>
       ))}
     </group>

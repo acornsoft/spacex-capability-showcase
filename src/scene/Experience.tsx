@@ -40,7 +40,7 @@ export function Experience({
         stencil: false,
         depth: true,
       }}
-      camera={{ position: [5.35, 2.85, 6.15], fov: 28, near: 0.1, far: 180 }}
+      camera={{ position: [6.85, 2.55, 3.45], fov: 32, near: 0.1, far: 180 }}
       onCreated={({ gl }) => {
         gl.setClearColor('#030508', 1)
         gl.toneMapping = ACESFilmicToneMapping

@@ -1,4 +1,4 @@
-import { Environment, Grid } from '@react-three/drei'
+import { Environment, Grid, Lightformer } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import type { MotionValue } from 'framer-motion'
 import { useRef } from 'react'
@@ -72,16 +72,16 @@ type LightsProps = {
 export function Lights({ isCoarse }: LightsProps) {
   return (
     <>
-      <ambientLight intensity={0.12} color="#c9d6e4" />
-      <directionalLight position={[5.2, 8.1, 4.8]} intensity={2.35} color="#f7fbff" />
-      <directionalLight position={[-7.2, 1.6, -2.8]} intensity={0.95} color="#3ee0e8" />
-      <directionalLight position={[2.2, -4.2, 3.1]} intensity={0.32} color="#e8a54b" />
-      <Environment
-        preset="studio"
-        environmentIntensity={0.4}
-        resolution={isCoarse ? 128 : 256}
-        background={false}
-      />
+      <ambientLight intensity={0.08} color="#c9d6e4" />
+      <directionalLight position={[6.2, 5.4, 2.2]} intensity={2.6} color="#f7fbff" />
+      <directionalLight position={[-5.5, 3.2, -4.8]} intensity={1.35} color="#3ee0e8" />
+      <directionalLight position={[1.4, -3.2, 4.2]} intensity={0.4} color="#e8a54b" />
+      <Environment frames={1} resolution={isCoarse ? 128 : 256} environmentIntensity={1.15}>
+        <Lightformer intensity={12} position={[5, 7, 1.5]} scale={[14, 1.4, 1]} form="rect" />
+        <Lightformer intensity={3.2} position={[-7, 2, -2]} scale={[2.5, 14, 1]} color="#3ee0e8" form="rect" />
+        <Lightformer intensity={2.2} position={[0, -5, 5]} scale={9} color="#e8a54b" />
+        <Lightformer intensity={1.6} position={[2, 10, -6]} scale={[18, 4, 1]} />
+      </Environment>
     </>
   )
 }

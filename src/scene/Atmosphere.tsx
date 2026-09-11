@@ -22,7 +22,7 @@ const fragmentShader = /* glsl */ `
   uniform vec3 uCore;
   uniform vec3 uRim;
   void main() {
-    float fresnel = pow(1.0 - max(dot(normalize(vNormalW), normalize(vView)), 0.0), 2.8);
+    float fresnel = pow(1.0 - max(dot(normalize(vNormalW), normalize(vView)), 0.0), 5.4);
     vec3 color = mix(uCore, uRim, fresnel);
     gl_FragColor = vec4(color, fresnel * uOpacity);
   }
@@ -54,12 +54,12 @@ export function Horizon({ progress }: HorizonProps) {
   useEffect(() => () => material.dispose(), [material])
 
   useFrame(() => {
-    material.uniforms.uOpacity.value = shotAt(progress.get()).horizon * 0.72
+    material.uniforms.uOpacity.value = shotAt(progress.get()).horizon * 0.38
   })
 
   return (
-    <mesh material={material} position={[0, -16.5, -10]} rotation={[0.18, 0, 0]}>
-      <sphereGeometry args={[18, 48, 32]} />
+    <mesh material={material} position={[0, -32, -18]} rotation={[0.22, 0, 0]}>
+      <sphereGeometry args={[24, 48, 32]} />
     </mesh>
   )
 }

@@ -32,11 +32,11 @@ export type Shot = {
 export const SHOTS: readonly Shot[] = [
   {
     at: 0,
-    position: [5.35, 2.85, 6.15],
-    target: [0.45, 0.15, 0],
-    fov: 28,
-    yaw: 0.62,
-    tilt: 0.14,
+    position: [6.85, 2.55, 3.45],
+    target: [0.35, 0.05, 0],
+    fov: 32,
+    yaw: 0.38,
+    tilt: 0.1,
     lift: 0.05,
     shiftX: 0.45,
     scale: 1,
@@ -48,11 +48,11 @@ export const SHOTS: readonly Shot[] = [
   },
   {
     at: 0.07,
-    position: [5.35, 2.85, 6.15],
-    target: [0.45, 0.15, 0],
-    fov: 28,
-    yaw: 0.62,
-    tilt: 0.14,
+    position: [6.85, 2.55, 3.45],
+    target: [0.35, 0.05, 0],
+    fov: 32,
+    yaw: 0.38,
+    tilt: 0.1,
     lift: 0.05,
     shiftX: 0.45,
     scale: 1,
@@ -299,7 +299,7 @@ export function beatAt(progress: number): NarrativeBeat {
 export function beatFocus(beat: NarrativeBeat): VehiclePart | null {
   switch (beat) {
     case 'hero':
-      return 'hull'
+      return null
     case 'ascent':
       return 'engines'
     case 'precision':
