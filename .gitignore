@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+
+# Build
+dist
+dist-ssr
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / OS
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# Env
+*.local
+.env
+.env.*
+
+# TypeScript
+*.tsbuildinfo
